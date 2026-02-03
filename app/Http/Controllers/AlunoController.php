@@ -9,56 +9,62 @@ class AlunoController extends Controller
 {
     public function index()
     {
-       $alunos = Aluno::orderByDesc('id')->get();
-       return view('alunos.index', compact('alunos'));
+        $alunos = Aluno::orderByDesc('id')->get();
+
+        return view('alunos.index', compact('alunos'));
 
     }
-    public function create(Aluno $aluno) 
+    public function create(Aluno $validated)
     {
-        return view('alunos.index');
-        
+        return view('alunos.create');
+
     }
 
-    public function edit(Aluno $aluno) 
-    {
-        return view('');
-    }
 
-    public function store(Request $request)
+    public function edit($id)
     {
-        $validate = $request->validate([
-            'nome' => ['required','string','max:255']
+
+        $aluno = Aluno::find($id);
+
+
+        if (!$aluno) {
+            return redirect()->route('alunos.index');
+        }
+
+        return view('alunos.edit', compact('aluno'));
+    }
+    public function store(Request $request, )
+    {
+
+        $validated = $request->validate([
+            'nome' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email'],
+            'data_nascimento' => 'nullable|date',
         ]);
-
-        Aluno::create([ 
-            'nome'=> $validate['nome']
-        ]);
-
+        Aluno::create($validated);
         return redirect()->route('alunos.index');
     }
 
-    
     public function update(Request $request, Aluno $alunos)
     {
-        $validated = $request->validate([
+        $aluno = Aluno::findOrFail($alunos->id);
+        $aluno->update($request->all());
 
-            'nome'=> ['required', 'string','max:255']
-
-            ]);
-
-            $alunos->update([
-
-            'nome' => $validated['nome']
-            ]);
-
-            return redirect() -> route('alunos.index');
+        return redirect()->route('alunos.index');
 
     }
 
-    
-    public function destroy(Aluno  $alunos)
+
+    public function destroy($id)
     {
-        $alunos->delete();
+
+        $aluno = Aluno::find($id);
+
+
+        if ($aluno) {
+            $aluno->delete();
+        }
+
         return redirect()->route('alunos.index');
     }
 }
