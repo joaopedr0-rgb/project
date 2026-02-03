@@ -39,6 +39,7 @@ class AlunoController extends Controller
         $validated = $request->validate([
             'nome' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email'],
+            
             'data_nascimento' => 'nullable|date',
         ]);
         Aluno::create($validated);
